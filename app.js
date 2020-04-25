@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/nodekb', {useNewUrlParser: true, useUnifiedTopology: true});
 let db = mongoose.connection;
 
-// Check for DB errors
+// Check for db errors
 db.on('error', function(err) {
   console.log(err);
 });
