@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser')
 
 // Connect to db
 mongoose.connect('mongodb://localhost/nodekb', {useNewUrlParser: true, useUnifiedTopology: true});
@@ -18,6 +19,16 @@ db.once('open', function(){
 
 // Init app
 const app = express();
+
+// Middleware
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse application/json
+app.use(bodyParser.json());
+
+// set public folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Bring in Models
 let Article = require('./models/article');
@@ -41,12 +52,39 @@ app.get('/', (req, res) => {
   });
 });
 
+// Get single article
+app.get('/article/:id', function(req,res){
+  Article.findById(req.params.id, function(err, article){
+    res.render('article', {
+      article:article
+    });
+  });
+});
+
 // Add route
 app.get('/articles/add', function(res, res) {
   res.render('add_article', {
     title:'Add article'
   });
-})
+});
+
+// Submit route
+app.post('/articles/add', function(req, res) {
+  let article = new Article();
+  article.title = req.body.title;
+  article.author = req.body.author;
+  article.body = req.body.body;
+
+  article.save(function(err){
+    if(err){
+      console.log(err);
+      return;
+    }
+    else {
+      res.redirect('/');
+    }
+  })
+});
 
 // Start server
 app.listen(3000, () => {
