@@ -6,6 +6,9 @@ const expressValidator =require('express-validator');
 const flash = require('connect-flash');
 const session = require('express-session');
 
+// new api @ https://express-validator.github.io/docs/
+const { check, validationResult } = require('express-validator');
+
 // Connect to db
 mongoose.connect('mongodb://localhost/nodekb', {useNewUrlParser: true, useUnifiedTopology: true});
 let db = mongoose.connection;
@@ -33,9 +36,8 @@ app.use(bodyParser.json());
 // session middleware
 app.use(session({
   secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: true }
+  resave: true,
+  saveUninitialized: true
 }));
 
 //messages middleware
@@ -44,8 +46,6 @@ app.use(function (req, res, next) {
   res.locals.messages = require('express-messages')(req, res);
   next();
 });
-
-//
 
 // set public folder
 app.use(express.static(path.join(__dirname, 'public')));
@@ -88,22 +88,43 @@ app.get('/articles/add', function(res, res) {
   });
 });
 
-// Submit route
-app.post('/articles/add', function(req, res) {
-  let article = new Article();
-  article.title = req.body.title;
-  article.author = req.body.author;
-  article.body = req.body.body;
+// Submit route (withMessage logs server-side)
+app.post('/articles/add',
+ [
+  check('title').isLength({min:1}).trim().withMessage('Title required'),
+  check('author').isLength({min:1}).trim().withMessage('Author required'),
+  check('body').isLength({min:1}).trim().withMessage('Body required')
+ ],
+  (req,res,next) => {
 
-  article.save(function(err){
-    if(err){
-      console.log(err);
-      return;
-    }
-    else {
+  let article = new Article({
+    title:req.body.title,
+    author:req.body.author,
+    body:req.body.body
+  });
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    req.flash('danger', 'Invalid article');
+    res.render('add_article',
+      {
+        title:'Add article',
+        errors: errors.mapped()
+      });
+  }
+  else {
+    article.title = req.body.title;
+    article.author = req.body.author;
+    article.body = req.body.body;
+
+    article.save(err=>{
+      if(err) throw err;
+      req.flash('success','Article Added');
       res.redirect('/');
-    }
-  })
+    });
+  }
 });
 
 // Load edit form
@@ -117,7 +138,13 @@ app.get('/article/edit/:id', function(req,res){
 });
 
 // Update Submit route
-app.post('/articles/edit/:id', function(req, res) {
+app.post('/articles/edit/:id', [
+  check('title').isLength({min:1}).trim().withMessage('Title required'),
+  check('author').isLength({min:1}).trim().withMessage('Author required'),
+  check('body').isLength({min:1}).trim().withMessage('Body required')
+ ],
+  (req,res,next) => {
+
   let article = {};
   article.title = req.body.title;
   article.author = req.body.author;
@@ -125,15 +152,25 @@ app.post('/articles/edit/:id', function(req, res) {
 
   let query = {_id:req.params.id};
 
-  Article.update(query, article, function(err){
-    if(err){
-      console.log(err);
-      return;
-    }
-    else {
-      res.redirect('/');
-    }
-  })
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    req.flash('danger', 'Invalid update');
+    res.redirect('/');
+  }
+  else {
+    Article.update(query, article, function(err){
+      if(err){
+        console.log(err);
+        return;
+      }
+      else {
+        req.flash('success', 'Article updated');
+        res.redirect('/');
+      }
+    });
+  };
 });
 
 // Delete
