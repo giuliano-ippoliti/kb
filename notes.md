@@ -22,6 +22,8 @@ db.articles.find();
 
 db.articles.find().pretty();
 
+db.users.remove({_id:ObjectId("5eac1d27bc2a0f12e8ca26bf")});
+
 * Node
 
 nodemon [ dans le dossier où il y l'appli ]

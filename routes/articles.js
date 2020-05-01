@@ -21,12 +21,6 @@ router.post('/add',
  ],
   (req,res,next) => {
 
-  let article = new Article({
-    title:req.body.title,
-    author:req.body.author,
-    body:req.body.body
-  });
-
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -38,9 +32,11 @@ router.post('/add',
       });
   }
   else {
-    article.title = req.body.title;
-    article.author = req.body.author;
-    article.body = req.body.body;
+    let article = new Article({
+      title:req.body.title,
+      author:req.body.author,
+      body:req.body.body
+    });
 
     article.save(err=>{
       if(err) throw err;
