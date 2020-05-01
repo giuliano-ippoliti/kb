@@ -5,12 +5,13 @@ const bodyParser = require('body-parser');
 const expressValidator =require('express-validator');
 const flash = require('connect-flash');
 const session = require('express-session');
+const config = require('./config/database');
 
 // new api @ https://express-validator.github.io/docs/
 const { check, validationResult } = require('express-validator');
 
 // Connect to db
-mongoose.connect('mongodb://localhost/nodekb', {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(config.database, {useNewUrlParser: true, useUnifiedTopology: true});
 let db = mongoose.connection;
 
 // Check for db errors
