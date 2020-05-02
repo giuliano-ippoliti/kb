@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const expressValidator =require('express-validator');
 const flash = require('connect-flash');
 const session = require('express-session');
+const passport = require('passport');
 const config = require('./config/database');
 
 // new api @ https://express-validator.github.io/docs/
@@ -57,6 +58,18 @@ let Article = require('./models/article');
 // Load view engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+
+// Passport config
+require('./config/passport')(passport);
+
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('*', function(req, res, next){
+  res.locals.user = req.user || null;
+  next();
+});
 
 // Home route
 app.get('/', (req, res) => {

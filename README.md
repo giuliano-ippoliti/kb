@@ -1,13 +1,23 @@
 # kb
 Knowledge base (for learning)
 
+# Pre-Install
+
+Install node.js
+
+Install bower: `npm install -g bower`
+
+For dev, useful to install nodemon: `npm install -g nodemon`
+
+Install MongoDB
+
+Create a nodekb database in MongoDB: `mongo` (Linux) or `mongo.exe`, then: `use nodekb`
+
 # Install
 
 `git clone https://github.com/giuliano-ippoliti/kb.git`
 
 `cd kb`
-
-If necessary: `npm install -g bower`
 
 `bower install bootstrap`
 
