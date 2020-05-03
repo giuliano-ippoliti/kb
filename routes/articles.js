@@ -2,8 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
 
-// Bring in Article model
+// Article model
 let Article = require('../models/article');
+// User model
+let User = require('../models/user');
 
 // Add route
 router.get('/add', function(res, res) {
@@ -16,7 +18,6 @@ router.get('/add', function(res, res) {
 router.post('/add',
  [
   check('title').isLength({min:1}).trim().withMessage('Title required'),
-  check('author').isLength({min:1}).trim().withMessage('Author required'),
   check('body').isLength({min:1}).trim().withMessage('Body required')
  ],
   (req,res,next) => {
@@ -34,7 +35,7 @@ router.post('/add',
   else {
     let article = new Article({
       title:req.body.title,
-      author:req.body.author,
+      author:req.user._id,
       body:req.body.body
     });
 
@@ -108,8 +109,11 @@ router.delete('/:id', function(req, res){
 // Get single article
 router.get('/:id', function(req,res){
   Article.findById(req.params.id, function(err, article){
-    res.render('article', {
-      article:article
+    User.findById(article.author, function(err, user){
+      res.render('article', {
+        article:article,
+        author:user.name
+      });
     });
   });
 });
