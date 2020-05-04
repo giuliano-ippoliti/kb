@@ -1,0 +1,20 @@
+- créer layout.pug que toutes les autres views incluent par
+  extends layout
+- link(rel='stylesheet' href='xxxxxx.css') pour charger les feuilles de style
+
+html
+  head
+    title knowledgebase
+  body
+
+- .container = <div class="container"> (cf https://devhints.io/pug)
+
+- In a template, a block is simply a “block” of Pug that a child template may replace. This process is recursive.
+  => dans le layout block content est remplacé par template fils (qui fait extend)
+
+- nav.navbar.navbar-expand-md.navbar-dark.bg-dark =
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+  TODO étudier un peu de CSS
+    L'élément HTML <nav> représente une section d'une page ayant des liens vers d'autres pages ou des fragments de cette page. Autrement dit, c'est une section destinée à la navigation dans un document (avec des menus, des tables des matières, des index, etc.).
+
+- https://getbootstrap.com/ : world’s most popular front-end component library. Bootstrap is an open source toolkit for developing with HTML, CSS, and JS.
