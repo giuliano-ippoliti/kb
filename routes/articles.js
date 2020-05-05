@@ -122,6 +122,9 @@ router.delete('/:id', function(req, res){
 });
 
 // Get single article
+// Express will put the matched placeholder (id) on req.param.
+// https://mongoosejs.com/docs/api.html#model_Model.findById
+//  Adventure.findById(id, function (err, adventure) {...});
 router.get('/:id', function(req,res){
   Article.findById(req.params.id, function(err, article){
     User.findById(article.author, function(err, user){
@@ -132,6 +135,9 @@ router.get('/:id', function(req,res){
     });
   });
 });
+// res.render(view [, locals] [, callback])
+//  locals, an object whose properties define local variables for the view.
+//  Dans la view on pourra donc utiliser article.xxx et #{author}
 
 // Access controls
 function ensureAuthenticated(req, res, next){
